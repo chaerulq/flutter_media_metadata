@@ -2,7 +2,6 @@ package com.alexmercerind.flutter_media_metadata;
 
 import java.util.HashMap;
 import java.lang.Runnable;
-import java9.util.concurrent.CompletableFuture;
 
 import android.os.Build;
 import android.os.Handler;
@@ -31,24 +30,29 @@ public class FlutterMediaMetadataPlugin implements FlutterPlugin, MethodCallHand
   public void onMethodCall(@NonNull final MethodCall call, @NonNull final Result result) {
     if (call.method.equals("MetadataRetriever")) {
       final String filePath = (String) call.argument("filePath");
-      CompletableFuture.runAsync(new Runnable() {
+
+      // ✅ Ganti CompletableFuture dengan Thread
+      new Thread(new Runnable() {
         @Override
         public void run() {
           MetadataRetriever retriever = new MetadataRetriever();
           retriever.setFilePath(filePath);
+
           final HashMap<String, Object> response = new HashMap<String, Object>();
           response.put("metadata", retriever.getMetadata());
           response.put("albumArt", retriever.getAlbumArt());
           retriever.release();
-          new Handler(Looper.getMainLooper())
-              .post(new Runnable() {
-                @Override
-                public void run() {
-                  result.success(response);
-                }
-              });
+
+          // Kirim hasil ke main thread
+          new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+              result.success(response);
+            }
+          });
         }
-      });
+      }).start();
+
     } else {
       result.notImplemented();
     }
