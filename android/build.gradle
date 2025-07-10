@@ -4,36 +4,35 @@ version '1.0'
 buildscript {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.2.1'
+        // Versi AGP lama, tidak masalah karena kita hanya tambahkan namespace
+        classpath 'com.android.tools.build:gradle:3.5.0'
     }
 }
 
 rootProject.allprojects {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
     }
 }
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 29
+
+    // ✅ Tambahkan ini untuk AGP 8.0+
+    namespace "com.alexmercerind.flutter_media_metadata"
 
     defaultConfig {
         minSdkVersion 16
     }
+
     lintOptions {
         disable 'InvalidPackage'
     }
-    dependencies {
-        // compile 'net.sourceforge.streamsupport:android-retrofuture:1.7.2'
-        implementation 'net.sourceforge.streamsupport:android-retrofuture:1.7.4'
-
-    }
-    
 }
